@@ -30,51 +30,40 @@ internal class GmailSenderImpl(
         })
     }
 
-    /**
-     * Sends a single email synchronously.
-     * This method creates and closes a new SMTP connection for each call.
-     *
-     * @param message The email message object ([EmailMessage]) to send.
-     */
     override fun send(message: GmailSender.EmailMessage) {
         val mime = createMimeMessage(message.to, message.subject, message.body)
         Transport.send(mime)
     }
 
-    /**
-     * Sends multiple emails efficiently using a single connection.
-     * This method internally creates a single SMTP connection, sends all emails, and then closes the connection.
-     *
-     * @param messages A list of email message objects ([EmailMessage]) to send.
-     */
-    override fun sendBulk(messages: List<GmailSender.EmailMessage>) {
+    override fun sendBulk(messages: List<GmailSender.EmailMessage>): GmailSender.BulkSendResult {
+        val successful = mutableListOf<GmailSender.EmailMessage>()
+        val failed = mutableMapOf<GmailSender.EmailMessage, Exception>()
+
         session.getTransport("smtp").use { transport ->
-            transport.connect(username, password)
-            for (msg in messages) {
-                val message = createMimeMessage(msg.to, msg.subject, msg.body)
-                transport.sendMessage(message, message.allRecipients)
+            try {
+                transport.connect(username, password)
+                for (msg in messages) {
+                    try {
+                        val message = createMimeMessage(msg.to, msg.subject, msg.body)
+                        transport.sendMessage(message, message.allRecipients)
+                        successful.add(msg)
+                    } catch (e: Exception) {
+                        failed[msg] = e
+                    }
+                }
+            } catch (e: Exception) {
+                // If the initial connection fails, all messages fail.
+                messages.forEach { msg -> failed[msg] = e }
             }
         }
+        return GmailSender.BulkSendResult(successful, failed)
     }
 
-    /**
-     * Sends a single email asynchronously.
-     * This method uses coroutines to execute blocking I/O operations on a background thread.
-     *
-     * @param message The email message object ([EmailMessage]) to send.
-     */
     override suspend fun sendAsync(message: GmailSender.EmailMessage) = withContext(Dispatchers.IO) {
         send(message)
     }
 
-    /**
-     * Sends multiple emails asynchronously using a single connection.
-     * This method uses coroutines to execute blocking I/O operations on a background thread,
-     * and internally creates a single SMTP connection, sends all emails, and then closes the connection.
-     *
-     * @param messages A list of email message objects ([EmailMessage]) to send.
-     */
-    override suspend fun sendBulkAsync(messages: List<GmailSender.EmailMessage>) = withContext(Dispatchers.IO) {
+    override suspend fun sendBulkAsync(messages: List<GmailSender.EmailMessage>): GmailSender.BulkSendResult = withContext(Dispatchers.IO) {
         sendBulk(messages)
     }
     

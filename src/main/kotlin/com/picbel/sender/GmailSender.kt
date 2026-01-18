@@ -16,10 +16,12 @@ interface GmailSender {
     /**
      * Sends multiple emails efficiently using a single connection.
      * This method internally creates a single SMTP connection, sends all emails, and then closes the connection.
+     * It continues sending even if some emails fail.
      *
      * @param messages A list of email message objects ([EmailMessage]) to send.
+     * @return A [BulkSendResult] object containing the lists of successful and failed messages.
      */
-    fun sendBulk(messages: List<EmailMessage>)
+    fun sendBulk(messages: List<EmailMessage>): BulkSendResult
 
     /**
      * Sends a single email asynchronously.
@@ -31,12 +33,13 @@ interface GmailSender {
 
     /**
      * Sends multiple emails asynchronously using a single connection.
-     * This method uses coroutines to execute blocking I/O operations on a background thread,
-     * and internally creates a single SMTP connection, sends all emails, and then closes the connection.
+     * This method uses coroutines to execute blocking I/O operations on a background thread.
+     * It continues sending even if some emails fail.
      *
      * @param messages A list of email message objects ([EmailMessage]) to send.
+     * @return A [BulkSendResult] object containing the lists of successful and failed messages.
      */
-    suspend fun sendBulkAsync(messages: List<EmailMessage>)
+    suspend fun sendBulkAsync(messages: List<EmailMessage>): BulkSendResult
 
     /**
      * Data class defining the content of an email message.
@@ -46,6 +49,17 @@ interface GmailSender {
      * @param body The body of the email.
      */
     data class EmailMessage(val to: String, val subject: String, val body: String)
+
+    /**
+     * Represents the result of a bulk send operation.
+     *
+     * @param successful A list of the messages that were sent successfully.
+     * @param failed A map where the key is the message that failed and the value is the Exception that occurred.
+     */
+    data class BulkSendResult(
+        val successful: List<EmailMessage>,
+        val failed: Map<EmailMessage, Exception>
+    )
 
     companion object {
         /**

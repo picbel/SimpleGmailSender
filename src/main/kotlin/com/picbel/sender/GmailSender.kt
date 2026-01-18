@@ -7,9 +7,7 @@ interface GmailSender {
     /**
      * Sends a single email.
      *
-     * @param to The recipient's email address.
-     * @param subject The subject of the email.
-     * @param body The body of the email.
+     * @param message The [EmailMessage] to send.
      */
     fun send(message: EmailMessage)
 
@@ -37,8 +35,21 @@ interface GmailSender {
          * @param password The Gmail app password.
          * @return An instance of [GmailSender].
          */
-        fun createGmailSender(username: String, password: String): GmailSender {
-            return GmailSenderImpl(username = username, password = password)
+        fun of(username: String, password: String): GmailSender {
+            return GmailSenderImpl(userEmail = username, password = password)
+        }
+
+        /**
+         * Creates a new instance of a Gmail-specific [GmailSender] with custom SMTP settings.
+         *
+         * @param host The SMTP host.
+         * @param port The SMTP port.
+         * @param username The Gmail account username.
+         * @param password The Gmail app password.
+         * @return An instance of [GmailSender].
+         */
+        fun of(host: String, port: String, username: String, password: String): GmailSender {
+            return GmailSenderImpl(host = host, port = port, userEmail = username, password = password)
         }
     }
 }

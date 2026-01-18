@@ -7,12 +7,12 @@ import java.util.*
 
 /**
  * A Gmail-specific implementation of the [GmailSender] interface.
- * This class is internal and should be instantiated via the [GmailSender.createGmailSender] factory method.
+ * This class is internal and should be instantiated via the [GmailSender.of] factory method.
  */
 internal class GmailSenderImpl(
     private val host: String = "smtp.gmail.com",
     private val port: String = "587",
-    private val username: String,
+    private val userEmail: String,
     private val password: String
 ) : GmailSender {
 
@@ -27,7 +27,7 @@ internal class GmailSenderImpl(
         }
         session = Session.getInstance(props, object : Authenticator() {
             override fun getPasswordAuthentication(): PasswordAuthentication {
-                return PasswordAuthentication(username, password)
+                return PasswordAuthentication(userEmail, password)
             }
         })
     }
@@ -37,7 +37,7 @@ internal class GmailSenderImpl(
             val mime = createMimeMessage(message)
             Transport.send(mime)
         } catch (e: MessagingException) {
-            e.printStackTrace()
+            throw e
         }
     }
 
@@ -45,7 +45,7 @@ internal class GmailSenderImpl(
         var transport: Transport? = null
         try {
             transport = session.transport
-            transport.connect(username, password) // Connect once
+            transport.connect(userEmail, password) // Connect once
 
             for (msg in messages) {
                 val mime = createMimeMessage(msg)
@@ -53,14 +53,14 @@ internal class GmailSenderImpl(
                 println("Bulk mail to ${msg.to} sent successfully!")
             }
         } catch (e: MessagingException) {
-            e.printStackTrace()
+            throw e
         } finally {
             transport?.close() // Close the connection at the end
         }
     }
 
     private fun createMimeMessage(message: GmailSender.EmailMessage): MimeMessage = MimeMessage(session).apply {
-        setFrom(InternetAddress(username))
+        setFrom(InternetAddress(userEmail))
         setRecipients(Message.RecipientType.TO, InternetAddress.parse(message.to))
         this.subject = subject
         setText(message.body)

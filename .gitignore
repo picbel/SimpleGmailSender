@@ -48,3 +48,4 @@ bin/
  # .gitignore content
 gradle/
 idea/
+.ai/

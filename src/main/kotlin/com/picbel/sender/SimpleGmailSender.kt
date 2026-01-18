@@ -4,7 +4,7 @@ package com.picbel.sender
  * Gmail-specific email sender interface.
  * Operates in a stateless manner; each sending method call independently manages its connection.
  */
-interface GmailSender {
+interface SimpleGmailSender {
     /**
      * Sends a single email synchronously.
      * This method creates and closes a new SMTP connection for each call.
@@ -63,28 +63,28 @@ interface GmailSender {
 
     companion object {
         /**
-         * Factory method to create an instance of [GmailSender].
+         * Factory method to create an instance of [SimpleGmailSender].
          * Uses default SMTP settings (smtp.gmail.com:587).
          *
          * @param username The Gmail account username.
          * @param password The Gmail app password or account password.
-         * @return An instance of [GmailSender].
+         * @return An instance of [SimpleGmailSender].
          */
-        fun of(username: String, password: String): GmailSender {
-            return GmailSenderImpl(username = username, password = password)
+        fun of(username: String, password: String): SimpleGmailSender {
+            return SimpleGmailSenderImpl(username = username, password = password)
         }
 
         /**
-         * Factory method to create an instance of [GmailSender] with custom SMTP settings.
+         * Factory method to create an instance of [SimpleGmailSender] with custom SMTP settings.
          *
          * @param host The SMTP server host address.
          * @param port The SMTP server port number.
          * @param username The Gmail account username.
          * @param password The Gmail app password or account password.
-         * @return An instance of [GmailSender].
+         * @return An instance of [SimpleGmailSender].
          */
-        fun of(host: String, port: String, username: String, password: String): GmailSender {
-            return GmailSenderImpl(username = username, password = password, host = host, port = port)
+        fun of(host: String, port: String, username: String, password: String): SimpleGmailSender {
+            return SimpleGmailSenderImpl(username = username, password = password, host = host, port = port)
         }
     }
 }

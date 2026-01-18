@@ -7,12 +7,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 
-internal class GmailSenderImpl(
+internal class SimpleGmailSenderImpl(
     private val username: String,
     private val password: String,
     private val host: String = "smtp.gmail.com",
     private val port: String = "587"
-) : GmailSender {
+) : SimpleGmailSender {
 
     private val session: Session
 
@@ -30,14 +30,14 @@ internal class GmailSenderImpl(
         })
     }
 
-    override fun send(message: GmailSender.EmailMessage) {
+    override fun send(message: SimpleGmailSender.EmailMessage) {
         val mime = createMimeMessage(message.to, message.subject, message.body)
         Transport.send(mime)
     }
 
-    override fun sendBulk(messages: List<GmailSender.EmailMessage>): GmailSender.BulkSendResult {
-        val successful = mutableListOf<GmailSender.EmailMessage>()
-        val failed = mutableMapOf<GmailSender.EmailMessage, Exception>()
+    override fun sendBulk(messages: List<SimpleGmailSender.EmailMessage>): SimpleGmailSender.BulkSendResult {
+        val successful = mutableListOf<SimpleGmailSender.EmailMessage>()
+        val failed = mutableMapOf<SimpleGmailSender.EmailMessage, Exception>()
 
         session.getTransport("smtp").use { transport ->
             try {
@@ -56,14 +56,14 @@ internal class GmailSenderImpl(
                 messages.forEach { msg -> failed[msg] = e }
             }
         }
-        return GmailSender.BulkSendResult(successful, failed)
+        return SimpleGmailSender.BulkSendResult(successful, failed)
     }
 
-    override suspend fun sendAsync(message: GmailSender.EmailMessage) = withContext(Dispatchers.IO) {
+    override suspend fun sendAsync(message: SimpleGmailSender.EmailMessage) = withContext(Dispatchers.IO) {
         send(message)
     }
 
-    override suspend fun sendBulkAsync(messages: List<GmailSender.EmailMessage>): GmailSender.BulkSendResult = withContext(Dispatchers.IO) {
+    override suspend fun sendBulkAsync(messages: List<SimpleGmailSender.EmailMessage>): SimpleGmailSender.BulkSendResult = withContext(Dispatchers.IO) {
         sendBulk(messages)
     }
     

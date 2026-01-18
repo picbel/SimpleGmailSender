@@ -19,6 +19,20 @@ interface GmailSender {
     fun sendBulk(messages: List<EmailMessage>)
 
     /**
+     * Sends a single email asynchronously.
+     *
+     * @param message The [EmailMessage] to send.
+     */
+    fun sendAsync(message: EmailMessage)
+
+    /**
+     * Sends multiple emails asynchronously using a single connection.
+     *
+     * @param messages A list of [EmailMessage] objects to send.
+     */
+    fun sendBulkAsync(messages: List<EmailMessage>)
+
+    /**
      * Represents a single email message to be sent.
      */
     data class EmailMessage(

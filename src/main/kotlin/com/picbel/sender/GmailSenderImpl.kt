@@ -56,6 +56,14 @@ internal class GmailSenderImpl(
         }
     }
 
+    override fun sendAsync(message: GmailSender.EmailMessage) {
+        TODO("Not yet implemented")
+    }
+
+    override fun sendBulkAsync(messages: List<GmailSender.EmailMessage>) {
+        TODO("Not yet implemented")
+    }
+
     private fun createMimeMessage(message: GmailSender.EmailMessage): MimeMessage = MimeMessage(session).apply {
         setFrom(InternetAddress(userEmail))
         setRecipients(Message.RecipientType.TO, InternetAddress.parse(message.to))

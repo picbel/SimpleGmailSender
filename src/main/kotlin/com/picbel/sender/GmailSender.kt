@@ -1,69 +1,76 @@
 package com.picbel.sender
 
 /**
- * An interface for sending emails.
+ * Gmail-specific email sender interface.
+ * Operates in a stateless manner; each sending method call independently manages its connection.
  */
 interface GmailSender {
     /**
-     * Sends a single email.
+     * Sends a single email synchronously.
+     * This method creates and closes a new SMTP connection for each call.
      *
-     * @param message The [EmailMessage] to send.
+     * @param message The email message object ([EmailMessage]) to send.
      */
     fun send(message: EmailMessage)
 
     /**
      * Sends multiple emails efficiently using a single connection.
+     * This method internally creates a single SMTP connection, sends all emails, and then closes the connection.
      *
-     * @param messages A list of [EmailMessage] objects to send.
+     * @param messages A list of email message objects ([EmailMessage]) to send.
      */
     fun sendBulk(messages: List<EmailMessage>)
 
     /**
      * Sends a single email asynchronously.
+     * This method uses coroutines to execute blocking I/O operations on a background thread.
      *
-     * @param message The [EmailMessage] to send.
+     * @param message The email message object ([EmailMessage]) to send.
      */
-    fun sendAsync(message: EmailMessage)
+    suspend fun sendAsync(message: EmailMessage)
 
     /**
      * Sends multiple emails asynchronously using a single connection.
+     * This method uses coroutines to execute blocking I/O operations on a background thread,
+     * and internally creates a single SMTP connection, sends all emails, and then closes the connection.
      *
-     * @param messages A list of [EmailMessage] objects to send.
+     * @param messages A list of email message objects ([EmailMessage]) to send.
      */
-    fun sendBulkAsync(messages: List<EmailMessage>)
+    suspend fun sendBulkAsync(messages: List<EmailMessage>)
 
     /**
-     * Represents a single email message to be sent.
+     * Data class defining the content of an email message.
+     *
+     * @param to The recipient's email address.
+     * @param subject The subject of the email.
+     * @param body The body of the email.
      */
-    data class EmailMessage(
-        val to: String,
-        val subject: String,
-        val body: String
-    )
+    data class EmailMessage(val to: String, val subject: String, val body: String)
 
     companion object {
         /**
-         * Creates a new instance of a Gmail-specific [GmailSender].
+         * Factory method to create an instance of [GmailSender].
+         * Uses default SMTP settings (smtp.gmail.com:587).
          *
          * @param username The Gmail account username.
-         * @param password The Gmail app password.
+         * @param password The Gmail app password or account password.
          * @return An instance of [GmailSender].
          */
         fun of(username: String, password: String): GmailSender {
-            return GmailSenderImpl(userEmail = username, password = password)
+            return GmailSenderImpl(username = username, password = password)
         }
 
         /**
-         * Creates a new instance of a Gmail-specific [GmailSender] with custom SMTP settings.
+         * Factory method to create an instance of [GmailSender] with custom SMTP settings.
          *
-         * @param host The SMTP host.
-         * @param port The SMTP port.
+         * @param host The SMTP server host address.
+         * @param port The SMTP server port number.
          * @param username The Gmail account username.
-         * @param password The Gmail app password.
+         * @param password The Gmail app password or account password.
          * @return An instance of [GmailSender].
          */
         fun of(host: String, port: String, username: String, password: String): GmailSender {
-            return GmailSenderImpl(host = host, port = port, userEmail = username, password = password)
+            return GmailSenderImpl(username = username, password = password, host = host, port = port)
         }
     }
 }

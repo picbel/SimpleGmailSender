@@ -36,26 +36,23 @@ internal class GmailSenderImpl(
         try {
             val mime = createMimeMessage(message)
             Transport.send(mime)
-        } catch (e: MessagingException) {
+        } catch (e: Exception) {
             throw e
         }
     }
 
     override fun sendBulk(messages: List<GmailSender.EmailMessage>) {
-        var transport: Transport? = null
         try {
-            transport = session.transport
-            transport.connect(userEmail, password) // Connect once
+            session.getTransport("smtp").use { transport ->
+                transport.connect(userEmail, password) // Connect once
 
-            for (msg in messages) {
-                val mime = createMimeMessage(msg)
-                transport.sendMessage(mime, mime.allRecipients) // Send over the same connection
-                println("Bulk mail to ${msg.to} sent successfully!")
+                for (msg in messages) {
+                    val mime = createMimeMessage(msg)
+                    transport.sendMessage(mime, mime.allRecipients)
+                }
             }
-        } catch (e: MessagingException) {
+        } catch (e: Exception) {
             throw e
-        } finally {
-            transport?.close() // Close the connection at the end
         }
     }
 

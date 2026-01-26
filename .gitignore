@@ -46,6 +46,5 @@ bin/
 .DS_Store
 
  # .gitignore content
-gradle/
 idea/
 .ai/

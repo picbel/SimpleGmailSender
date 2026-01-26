@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
 }
 
-group = "com.github.picbel"
+group = "com.picbel"
 version = "1.0.0"
 
 repositories {

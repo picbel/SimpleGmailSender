@@ -24,6 +24,10 @@ kotlin {
     jvmToolchain(21)
 }
 
+tasks.withType<PublishToMavenRepository>().all {
+    dependsOn(tasks.build)
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {

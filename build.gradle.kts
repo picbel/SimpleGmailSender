@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
 }
 
-group = "com.picbel"
+group = "com.github.picbel"
 version = "1.0.0"
 
 repositories {
@@ -24,28 +24,11 @@ kotlin {
     jvmToolchain(21)
 }
 
-tasks.withType<PublishToMavenRepository>().all {
-    dependsOn(tasks.build)
-}
-
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "com.picbel"
-            artifactId = "simple-gmail-sender"
-            version = "1.0.0"
-
+            artifactId = "SimpleGmailSender"
             from(components["java"])
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/picbel/SimpleGmailSender")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
         }
     }
 }

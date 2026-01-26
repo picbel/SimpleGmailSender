@@ -1,6 +1,6 @@
 # SimpleGmailSender
 
-![Kotlin](https://img.shields.io/badge/Kotlin-100%25-blueviolet) ![License](https://img.shields.io/badge/License-MIT-blue)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.2.0-blueviolet) ![License](https://img.shields.io/badge/License-MIT-blue)
 
 `SimpleGmailSender`는 Gmail의 SMTP 서버를 통해 이메일을 쉽게 보낼 수 있도록 도와주는 가벼운 코틀린 라이브러리입니다. 복잡한 설정 없이, 몇 줄의 코드만으로 동기 및 비동기 이메일 발송 기능을 구현할 수 있습니다.
 
@@ -12,11 +12,13 @@
 - **보안**: Gmail 계정 비밀번호 대신 [앱 비밀번호](https://support.google.com/accounts/answer/185833) 사용을 권장합니다.
 - **유연한 설정**: 기본 Gmail SMTP 설정 외에 커스텀 SMTP 서버 정보(호스트, 포트)를 직접 지정할 수 있습니다.
 
-## 📦 설치 방법
+## 🚀 시작하기
+
+### 의존성 추가
 
 **Gradle (Kotlin DSL)**
 
-`build.gradle.kts` 파일의 `dependencies` 블록에 다음 코드를 추가하세요.
+`build.gradle.kts` 파일에 다음 설정을 추가합니다.
 
 ```kotlin
 repositories {
@@ -26,11 +28,27 @@ repositories {
 }
 
 dependencies {
-    implementation("com.picbel:simple-gmail-sender:1.0.0") // 버전을 최신 릴리즈 버전으로 변경하세요.
+    implementation("com.picbel:simple-gmail-sender:1.0.0") // 최신 버전으로 변경하세요
 }
 ```
 
-## 🚀 사용법
+**Gradle (Groovy DSL)**
+
+`build.gradle` 파일에 다음 설정을 추가합니다.
+
+```groovy
+repositories {
+    mavenCentral()
+    // GitHub Packages 저장소 추가
+    maven { url "https://maven.pkg.github.com/picbel/SimpleGmailSender" }
+}
+
+dependencies {
+    implementation 'com.picbel:simple-gmail-sender:1.0.0' // 최신 버전으로 변경하세요
+}
+```
+
+## 📚 사용법
 
 ### 1. SimpleGmailSender 인스턴스 생성
 
@@ -135,6 +153,3 @@ val customSender = SimpleGmailSender.of(
 ## 📜 라이선스
 
 이 프로젝트는 `MIT` 라이선스를 따릅니다. 자세한 내용은 `LICENSE` 파일을 참고하세요.
-(아직 LICENSE 파일이 없다면 추가하는 것을 권장합니다.)
-
----
